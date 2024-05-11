@@ -1,6 +1,8 @@
 package com.example.mynewsapp.api
 
-import com.example.mynewsapp.api.model.SourcesResponse
+import com.example.mynewsapp.api.model.newsResponse.NewsResponse
+import com.example.mynewsapp.api.model.sourcesResponse.Source
+import com.example.mynewsapp.api.model.sourcesResponse.SourcesResponse
 import com.example.mynewsapp.constant.APiConstant
 import retrofit2.Call
 import retrofit2.http.GET
@@ -12,4 +14,10 @@ interface WebServices {
     fun getSources(
         @Query("apiKey")apiKey: String=APiConstant.API_KEY
     ): Call<SourcesResponse>
+
+    @GET("v2/everything")
+    fun getNews(
+        @Query("apiKey")apiKey: String= APiConstant.API_KEY,
+        @Query("sources")sources: String
+    ):Call<NewsResponse>
 }
