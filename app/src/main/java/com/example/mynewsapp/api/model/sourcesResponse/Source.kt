@@ -1,4 +1,4 @@
-package com.example.mynewsapp.api.model
+package com.example.mynewsapp.api.model.sourcesResponse
 
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
