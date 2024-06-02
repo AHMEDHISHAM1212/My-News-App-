@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.mynewsapp.api.ApiManager
 import com.example.mynewsapp.api.model.newsResponse.NewsResponse
 import com.example.mynewsapp.api.model.sourcesResponse.Source
 import com.example.mynewsapp.api.model.sourcesResponse.SourcesResponse
 import com.example.mynewsapp.databinding.FragmentNewsBinding
+import com.example.mynewsapp.ui.ViewError
 import com.example.mynewsapp.ui.showDialog
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
@@ -22,6 +25,11 @@ import retrofit2.Response
 
 class NewsFragment: Fragment() {
     private lateinit var viewBinding: FragmentNewsBinding
+    private lateinit var viewModel: NewsViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this)[NewsViewModel::class.java]
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,8 +42,23 @@ class NewsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getNewsSources()
+        viewModel.getNewsSources()
+        initObservers()
         initRecyclerView()
+    }
+
+    private fun initObservers() {
+        viewModel.shouldShowLoading.observe(viewLifecycleOwner) {
+            value -> viewBinding.progressBar.isVisible = value }
+        viewModel.sourcesLiveData.observe(viewLifecycleOwner){sources->
+            bindTabs(sources)
+        }
+        viewModel.newsLiveData.observe(viewLifecycleOwner){news->
+            newsAdapter.bindNews(news)
+        }
+        viewModel.errorLiveData.observe(viewLifecycleOwner){viewError->
+            handelError(viewError)
+        }
     }
 
     private val newsAdapter = NewsAdapter(null)
@@ -43,39 +66,6 @@ class NewsFragment: Fragment() {
         viewBinding.rvNews.adapter = newsAdapter
     }
 
-    private fun getNewsSources() {
-        viewBinding.progressBar.isVisible = true
-//        viewBinding.progressBar.visibility = View.VISIBLE
-        ApiManager.getApis()
-            .getSources()
-            .enqueue(object: Callback<SourcesResponse>{
-                override fun onFailure(call: Call<SourcesResponse>, t: Throwable) {
-                    Log.i("NewsFragment","onFailure")
-                    viewBinding.progressBar.isVisible = false
-                    handelError(t) {
-                        getNewsSources()
-                    }
-
-                }
-                override fun onResponse(call: Call<SourcesResponse>, response: Response<SourcesResponse>) {
-                    viewBinding.progressBar.isVisible = false
-                    if (response.isSuccessful){
-                        Log.i("NewsFragment","onResponse & success")
-                        //show tabs in fragment.
-                        bindTabs(response.body()?.sources)
-                    }else{
-                        Log.i("NewsFragment","onResponse & fail")
-                        // error from server and get the body error and
-                        // convert it into response and get the message of the error.
-                        val errorBodyJsonString =response.errorBody()?.string()
-                        val errorResponse = Gson().fromJson(errorBodyJsonString, SourcesResponse::class.java)
-                        handelError(errorResponse.message){
-                            getNewsSources()
-                        }
-                    }
-                }
-            })
-    }
     private fun bindTabs(sources: List<Source?>?) {
         if (sources==null)
             //TODO handel if not found sources to show
@@ -94,12 +84,12 @@ class NewsFragment: Fragment() {
             object: TabLayout.OnTabSelectedListener{
                 override fun onTabSelected(tab: TabLayout.Tab?) {
                     val source = tab?.tag as Source
-                    getNews(source.id)
+                    viewModel.getNews(source.id)
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab?) {
                     val source = tab?.tag as Source
-                    getNews(source.id)
+                    viewModel.getNews(source.id)
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -108,57 +98,12 @@ class NewsFragment: Fragment() {
         )
         viewBinding.tabLayout.getTabAt(0)?.select()
     }
-
-    private fun getNews(sourceId: String?) {
-        viewBinding.progressBar.isVisible = true
-        ApiManager.getApis()
-            .getNews(sources = sourceId!!)
-            .enqueue(object :Callback<NewsResponse> {
-                override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
-                    viewBinding.progressBar.isVisible = false
-                    handelError(t){
-                        getNews(sourceId)
-                    }
-                }
-
-                override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
-                    viewBinding.progressBar.isVisible = false
-                    if (response.isSuccessful){
-                        //show news
-                        newsAdapter.bindNews(response.body()?.articles)
-                        return
-                    }
-                    val responseJsonError = response.errorBody()?.string()
-                    val errorResponse = Gson().fromJson(responseJsonError,NewsResponse::class.java)
-                    handelError(errorResponse.message){
-                        getNews(sourceId)
-                    }
-
-                }
-
-            })
-    }
-    fun interface OnTryAgainClickListener{
-        fun onTryAgainCLick()
-    }
-    fun handelError(t: Throwable , onClick: OnTryAgainClickListener){
-        showDialog(t.localizedMessage?:"Something went wrong",
+    private fun handelError(viewError: ViewError){
+        showDialog(viewError.message?:viewError.throwable?.localizedMessage?:"Something went wrong",
             posActionName = "Try again!",
             posAction = {dialog: DialogInterface, i: Int ->
                 dialog.dismiss()
-                onClick.onTryAgainCLick() },
-            negActionName = "Cancel",
-            negAction = {dialog, i ->
-                dialog.dismiss()
-            }
-        )
-    }
-    fun handelError(message:String?,onClick: OnTryAgainClickListener){
-        showDialog(message?:"Something went wrong",
-            posActionName = "Try again!",
-            posAction = {dialog: DialogInterface, i: Int ->
-                dialog.dismiss()
-                onClick.onTryAgainCLick()},
+             viewError.onTryAgainClickListener?.onTryAgainCLick()},
             negActionName = "Cancel",
             negAction = {dialog, i ->
                 dialog.dismiss()
