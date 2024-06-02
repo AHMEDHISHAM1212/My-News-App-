@@ -8,20 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.mynewsapp.api.ApiManager
-import com.example.mynewsapp.api.model.newsResponse.NewsResponse
 import com.example.mynewsapp.api.model.sourcesResponse.Source
-import com.example.mynewsapp.api.model.sourcesResponse.SourcesResponse
 import com.example.mynewsapp.databinding.FragmentNewsBinding
 import com.example.mynewsapp.ui.ViewError
 import com.example.mynewsapp.ui.showDialog
 import com.google.android.material.tabs.TabLayout
-import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 class NewsFragment: Fragment() {
     private lateinit var viewBinding: FragmentNewsBinding
@@ -43,13 +36,19 @@ class NewsFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getNewsSources()
+        initViews()
         initObservers()
         initRecyclerView()
     }
 
+    private fun initViews() {
+        viewBinding.vm = viewModel
+        viewBinding.lifecycleOwner = this
+    }
+
     private fun initObservers() {
-        viewModel.shouldShowLoading.observe(viewLifecycleOwner) {
-            value -> viewBinding.progressBar.isVisible = value }
+//        viewModel.shouldShowLoading.observe(viewLifecycleOwner) {
+//            value -> viewBinding.progressBar.isVisible = value }
         viewModel.sourcesLiveData.observe(viewLifecycleOwner){sources->
             bindTabs(sources)
         }
