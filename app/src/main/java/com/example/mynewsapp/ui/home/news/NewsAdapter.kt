@@ -20,11 +20,7 @@ class NewsAdapter(var newsList: List<NewsItem?>?) :RecyclerView.Adapter<NewsAdap
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val news = newsList!![position]
-        holder.itemNewsBinding.tvTitleNews.text = news?.title
-        holder.itemNewsBinding.tvDescNews.text = news?.description
-        Glide.with(holder.itemView)
-            .load(news?.urlToImage)
-            .into(holder.itemNewsBinding.ivNews)
+        holder.bind(news)
     }
 
     override fun getItemCount(): Int {
@@ -36,6 +32,11 @@ class NewsAdapter(var newsList: List<NewsItem?>?) :RecyclerView.Adapter<NewsAdap
         notifyDataSetChanged()
     }
 
-    class ViewHolder(val itemNewsBinding: ItemNewsBinding): RecyclerView.ViewHolder(itemNewsBinding.root)
+    class ViewHolder(val itemNewsBinding: ItemNewsBinding): RecyclerView.ViewHolder(itemNewsBinding.root){
+        fun bind(news: NewsItem?){
+            itemNewsBinding.news = news
+            itemNewsBinding.executePendingBindings()
+        }
+    }
 
 }
