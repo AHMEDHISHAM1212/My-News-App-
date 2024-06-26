@@ -4,6 +4,7 @@ import com.example.mynewsapp.api.model.newsResponse.NewsResponse
 import com.example.mynewsapp.api.model.sourcesResponse.Source
 import com.example.mynewsapp.api.model.sourcesResponse.SourcesResponse
 import com.example.mynewsapp.constant.APiConstant
+import com.example.mynewsapp.ui.home.category.Category
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,7 +13,8 @@ import retrofit2.http.Query
 interface WebServices {
     @GET("v2/top-headlines/sources")
     fun getSources(
-        @Query("apiKey")apiKey: String=APiConstant.API_KEY
+        @Query("apiKey")apiKey: String=APiConstant.API_KEY,
+        @Query("category") category: String
     ): Call<SourcesResponse>
 
     @GET("v2/everything")

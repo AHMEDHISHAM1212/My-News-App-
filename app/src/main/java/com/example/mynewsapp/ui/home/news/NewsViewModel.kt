@@ -10,6 +10,7 @@ import com.example.mynewsapp.api.model.newsResponse.NewsResponse
 import com.example.mynewsapp.api.model.sourcesResponse.Source
 import com.example.mynewsapp.api.model.sourcesResponse.SourcesResponse
 import com.example.mynewsapp.ui.ViewError
+import com.example.mynewsapp.ui.home.category.Category
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,10 +21,10 @@ class NewsViewModel: ViewModel() {
     val sourcesLiveData = MutableLiveData<List<Source?>?>()
     val newsLiveData = MutableLiveData<List<NewsItem?>?>()
     val errorLiveData = MutableLiveData<ViewError>()
-    fun getNewsSources() {
+    fun getNewsSources(category: Category) {
         shouldShowLoading.postValue(true)
         ApiManager.getApis()
-            .getSources()
+            .getSources(category = category.id)
             .enqueue(object: Callback<SourcesResponse> {
                 override fun onFailure(call: Call<SourcesResponse>, t: Throwable) {
                     Log.i("NewsFragment","onFailure")
@@ -32,7 +33,7 @@ class NewsViewModel: ViewModel() {
                         ViewError(
                             throwable = t
                         ){
-                            getNewsSources()
+                            getNewsSources(category = category)
                         })
                 }
                 override fun onResponse(call: Call<SourcesResponse>, response: Response<SourcesResponse>) {
@@ -51,7 +52,7 @@ class NewsViewModel: ViewModel() {
                             ViewError(
                                 message = errorResponse.message
                             ){
-                                getNewsSources()
+                                getNewsSources(category)
                             })
                     }
                 }
