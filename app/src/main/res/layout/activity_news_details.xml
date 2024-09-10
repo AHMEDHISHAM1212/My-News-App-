@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="news"
+            type="com.example.mynewsapp.data.api.model.newsResponse.NewsItem" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        >
+        <ImageView
+            android:id="@+id/iv_news"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="fitXY"
+            app:url="@{news.urlToImage}"
+            app:placeHolder="@{@drawable/ic_place_holder}"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src = "@drawable/ic_launcher_background"
+            />
+        <TextView
+            android:id="@+id/tv_news_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@{news.source.name}"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/iv_news"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="BBC News"
+            />
+        <TextView
+            android:id="@+id/tv_title_news"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="18sp"
+            android:text="@{news.title}"
+            app:layout_constraintTop_toBottomOf="@id/tv_news_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@string/fab_transformation_scrim_behavior"
+            />
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@{news.publishedAt}"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_news"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="3 hours ago"
+            />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:elevation="16dp"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_date"
+            >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/dec_root_details"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                onClickViews="@{news.url}"
+                >
+
+                <TextView
+                    android:id="@+id/tv_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{news.description}"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/fab_transformation_scrim_behavior"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_view_full_articles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View Full News at the website"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_next_arrow"
+                    app:layout_constraintTop_toTopOf="@id/iv_next_arrow"
+                    app:layout_constraintEnd_toStartOf="@id/iv_next_arrow"
+                    tools:text="View Full News at the website" />
+
+                <ImageView
+                    android:id="@+id/iv_next_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginStart="2dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_desc"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

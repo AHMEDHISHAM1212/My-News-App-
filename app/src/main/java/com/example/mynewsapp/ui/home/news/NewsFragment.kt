@@ -1,17 +1,20 @@
 package com.example.mynewsapp.ui.home.news
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.mynewsapp.api.model.sourcesResponse.Source
+import com.example.mynewsapp.data.api.model.sourcesResponse.Source
 import com.example.mynewsapp.databinding.FragmentNewsBinding
 import com.example.mynewsapp.ui.ViewError
+import com.example.mynewsapp.ui.home.category.Category
 import com.example.mynewsapp.ui.showDialog
 import com.google.android.material.tabs.TabLayout
 
@@ -35,10 +38,19 @@ class NewsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getNewsSources()
+        viewModel.getNewsSources(category)
         initViews()
         initObservers()
         initRecyclerView()
+    }
+
+    lateinit var category: Category
+    companion object{
+        fun getInstance(category: Category): NewsFragment{
+            val instance = NewsFragment()
+            instance.category = category
+            return instance
+        }
     }
 
     private fun initViews() {
@@ -63,6 +75,16 @@ class NewsFragment: Fragment() {
     private val newsAdapter = NewsAdapter(null)
     private fun initRecyclerView() {
         viewBinding.rvNews.adapter = newsAdapter
+        initAdapterClick()
+    }
+
+    private fun initAdapterClick() {
+        newsAdapter.onItemClickListener =
+            NewsAdapter.OnItemClickListener{ _, news ->
+                val intent =Intent(requireContext(),NewsDetailsActivity::class.java)
+                intent.putExtra("news",news)
+                startActivity(intent)
+            }
     }
 
     private fun bindTabs(sources: List<Source?>?) {
@@ -74,6 +96,13 @@ class NewsFragment: Fragment() {
             tab.text = source?.name
             tab.tag = source
             viewBinding.tabLayout.addTab(tab)
+            var layoutParams = LinearLayout.LayoutParams(tab.view.layoutParams)
+            layoutParams.marginEnd = 12
+            layoutParams.marginStart = 12
+            layoutParams.bottomMargin = 12
+            layoutParams.topMargin = 12
+            tab.view.layoutParams = layoutParams
+
         }
         initTabsClicks()
     }
