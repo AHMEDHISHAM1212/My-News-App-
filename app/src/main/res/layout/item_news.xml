@@ -6,7 +6,7 @@
     <data>
         <variable
             name="news"
-            type="com.example.mynewsapp.api.model.newsResponse.NewsItem" />
+            type="com.example.mynewsapp.data.api.model.newsResponse.NewsItem" />
     </data>
 
     <androidx.cardview.widget.CardView

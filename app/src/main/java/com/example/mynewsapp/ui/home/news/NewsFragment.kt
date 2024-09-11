@@ -11,7 +11,7 @@ import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.mynewsapp.api.model.sourcesResponse.Source
+import com.example.mynewsapp.data.api.model.sourcesResponse.Source
 import com.example.mynewsapp.databinding.FragmentNewsBinding
 import com.example.mynewsapp.ui.ViewError
 import com.example.mynewsapp.ui.home.category.Category

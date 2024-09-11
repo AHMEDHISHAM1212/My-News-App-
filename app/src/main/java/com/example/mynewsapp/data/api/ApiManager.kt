@@ -1,4 +1,4 @@
-package com.example.mynewsapp.api
+package com.example.mynewsapp.data.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -7,7 +7,7 @@ class ApiManager {
    companion object{
        private var retrofit: Retrofit?= null
        private fun getInstance(): Retrofit{
-           if (retrofit==null){
+           if (retrofit ==null){
                //create
                retrofit = Retrofit.Builder()
                    .baseUrl("https://newsapi.org/")
@@ -16,7 +16,7 @@ class ApiManager {
            }
            return retrofit!!
        }
-       fun getApis():WebServices {
+       fun getApis(): WebServices {
            return getInstance().create(WebServices::class.java)
        }
    }
