@@ -17,8 +17,11 @@ import com.example.mynewsapp.ui.ViewError
 import com.example.mynewsapp.ui.home.category.Category
 import com.example.mynewsapp.ui.showDialog
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class NewsFragment: Fragment() {
     private lateinit var viewBinding: FragmentNewsBinding
     private lateinit var viewModel: NewsViewModel
@@ -72,7 +75,7 @@ class NewsFragment: Fragment() {
         }
     }
 
-    private val newsAdapter = NewsAdapter(null)
+   @Inject lateinit var newsAdapter: NewsAdapter
     private fun initRecyclerView() {
         viewBinding.rvNews.adapter = newsAdapter
         initAdapterClick()
