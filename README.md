@@ -13,6 +13,3 @@
 - Recycler view
 
 # mockup design:
-
-
-
