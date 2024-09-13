@@ -10,7 +10,9 @@ import com.example.mynewsapp.databinding.ActivityHomeBinding
 import com.example.mynewsapp.ui.home.category.Category
 import com.example.mynewsapp.ui.home.category.CategoryFragment
 import com.example.mynewsapp.ui.home.settings.SettingsFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityHomeBinding
     private var categoryFragment = CategoryFragment()
