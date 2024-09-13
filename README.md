@@ -11,3 +11,8 @@
 - Retrofit
 - Fragments
 - Recycler view
+
+# mockup design:
+
+
+
